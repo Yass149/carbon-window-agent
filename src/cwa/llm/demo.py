@@ -210,11 +210,19 @@ class DemoLLM:
                 {"kwh": float(energy[1]), "intensity_gco2_kwh": window["avg_intensity"]},
             )
         if saving_plan and "save_plan" not in results:
+            if re.search(r"\b(?:ev|electric vehicle|car)\b", question):
+                device = "EV charging"
+            elif "dishwash" in question:
+                device = "Dishwasher"
+            elif "heat" in question:
+                device = "Heat pump"
+            else:
+                device = "Flexible load"
             return _tool(
                 "save_plan",
                 {
-                    "title": "Low-carbon electricity plan",
-                    "device": "heat pump" if "heat" in question else "flexible load",
+                    "title": f"Low-carbon plan for {device}",
+                    "device": device,
                     "start": window["start"],
                     "end": window["end"],
                     "expected_kg_co2": results["estimate_emissions"]["kg_co2"],
@@ -243,11 +251,17 @@ class DemoLLM:
         plan_id = results.get("save_plan", {}).get("plan_id")
         if plan_id:
             text += " Your saved plan is pending human approval."
+        caveats = forecast.get("caveats", []) + ["Forecasts are uncertain."]
+        if "get_weather_forecast" in results:
+            caveats.append(
+                "Weather was retrieved as context, but this schedule optimizes carbon "
+                "intensity only; it does not model building heat demand."
+            )
         return _answer(
             text,
             recommendation=f"Run from {start} to {end}.",
             numbers_used=numbers,
             assumptions=[assumption, "Assumed constant power during the run."],
-            caveats=forecast.get("caveats", []) + ["Forecasts are uncertain."],
+            caveats=caveats,
             plan_id=plan_id,
         )

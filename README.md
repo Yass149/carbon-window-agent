@@ -8,6 +8,20 @@ approval; the app never controls a device.
 The project runs locally with a free, deterministic rules demo. Claude is an
 optional provider and requires a separately billed Anthropic API key.
 
+## Why use it?
+
+Electricity has a carbon intensity: an estimate of the CO₂ associated with
+each kilowatt-hour used. That estimate changes throughout the day as demand,
+weather and the generation mix change. If an EV charge or appliance cycle can
+wait, this project helps compare forecast hours for the same task and shows
+the assumptions behind the result.
+
+You do not need to make carbon your top priority. Use the schedule only when
+it fits your routine or when you need a traceable estimate for awareness or
+reporting. The app does not compare tariffs, promise bill savings or control
+your equipment. If cost or convenience matters more, follow your tariff and
+your normal schedule.
+
 ![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/API-FastAPI-009688?logo=fastapi&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/UI-Streamlit-FF4B4B?logo=streamlit&logoColor=white)
@@ -22,6 +36,8 @@ optional provider and requires a separately billed Anthropic API key.
   tested Python scheduling functions.
 - Estimates load emissions when you provide energy use in kWh.
 - Records model and tool activity in a trace you can inspect for each answer.
+- Plots the forecast timeline and highlights the selected run window.
+- Explains the comparison against the earliest time you allowed.
 - Saves requested plans as pending; a person must approve or reject them.
 - Uses public carbon, postcode and weather services without provider API keys.
 
@@ -77,7 +93,9 @@ make ui
 ```
 
 Then visit `http://localhost:8501`. The sidebar shows API connectivity and
-which provider is active. You can also try the API directly:
+which provider is active. The guided form builds a supported scheduling
+question; the conversation view accepts follow-ups. Results include a forecast
+timeline, an earliest-start comparison and assumptions. You can also try the API directly:
 
 ```sh
 curl -s http://127.0.0.1:8000/ask \
