@@ -1,13 +1,67 @@
 # Carbon Window Agent
 
-Carbon Window Agent uses forecast electricity intensity, postcode lookup and
-weather data to find lower carbon times to run flexible electricity loads in
-Great Britain. The live API defaults to a deterministic rules demo, so it runs
-without an LLM account, API key or model charge.
+Find lower-carbon times to run flexible electrical loads in Great Britain. Ask
+about local grid intensity, estimate a load's emissions, or schedule an EV,
+heat pump or household device around the carbon forecast. Plans wait for human
+approval; the app never controls a device.
 
-## Run it
+The project runs locally with a free, deterministic rules demo. Claude is an
+optional provider and requires a separately billed Anthropic API key.
 
-Requires Python 3.11 or newer.
+![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/API-FastAPI-009688?logo=fastapi&logoColor=white)
+![Streamlit](https://img.shields.io/badge/UI-Streamlit-FF4B4B?logo=streamlit&logoColor=white)
+![Pydantic](https://img.shields.io/badge/validation-Pydantic-E92063?logo=pydantic&logoColor=white)
+![SQLite](https://img.shields.io/badge/storage-SQLite-003B57?logo=sqlite&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/CI-GitHub_Actions-2088FF?logo=githubactions&logoColor=white)
+
+## What it does
+
+- Retrieves regional UK carbon-intensity forecasts using a postcode or outcode.
+- Finds the lowest-carbon interval for a flexible load using deterministic,
+  tested Python scheduling functions.
+- Estimates load emissions when you provide energy use in kWh.
+- Records model and tool activity in a trace you can inspect for each answer.
+- Saves requested plans as pending; a person must approve or reject them.
+- Uses public carbon, postcode and weather services without provider API keys.
+
+## Tech stack
+
+| Area | Technologies |
+|---|---|
+| Language and validation | Python 3.11+, Pydantic v2 |
+| API and server | FastAPI, Uvicorn, HTTPX |
+| Optional interface | Streamlit |
+| Persistence | SQLite |
+| Data | NESO Carbon Intensity API, postcodes.io, Open-Meteo |
+| Model providers | Free rules demo by default; optional Anthropic Claude Haiku |
+| Quality | pytest, respx, Ruff, mypy, GitHub Actions |
+
+## Architecture
+
+```mermaid
+flowchart LR
+    U[User] --> UI[Streamlit UI]
+    U --> API[FastAPI]
+    UI --> API
+    API --> AG[Agent loop and guardrails]
+    AG --> LLM[Demo rules or optional Claude]
+    AG --> TR[Typed tool registry]
+    TR --> DATA[Carbon Intensity API<br/>postcodes.io<br/>Open-Meteo]
+    TR --> PY[Python scheduling and emissions]
+    API --> DB[(SQLite<br/>sessions, traces, plans)]
+    AG --> API
+```
+
+The model selects tools and explains results. Python computes windows and
+emissions, and every quantitative answer is checked against recorded tool
+evidence. Tool outputs are treated as data, not instructions. The approval
+endpoints are separate from the agent's tool allow-list.
+
+## Quick start
+
+Requires Python 3.11 or newer. The rules demo needs an internet connection for
+live public data, but no model key or model API usage.
 
 ```sh
 make install
@@ -15,102 +69,95 @@ make check
 make run
 ```
 
-Then send a question to `http://127.0.0.1:8000/ask`:
+The API listens on `http://127.0.0.1:8000`. To open the interface, run this in
+a second terminal:
+
+```sh
+make ui
+```
+
+Then visit `http://localhost:8501`. The sidebar shows API connectivity and
+which provider is active. You can also try the API directly:
 
 ```sh
 curl -s http://127.0.0.1:8000/ask \
   -H 'Content-Type: application/json' \
-  -d '{"question":"When should I charge my EV in RG1 tonight for 4 hours?"}'
+  -d '{"question":"When is the cleanest 4-hour window to charge my EV in RG1 tonight?"}'
 ```
 
-Run an end-to-end terminal example against the public data APIs, using only the
-free rules provider, with its full trace:
+Other useful prompts:
 
-```sh
-make demo
-```
+- “What is the current carbon intensity in RG1?”
+- “Estimate emissions for a 2 kWh load in RG1 right now.”
+- “Save a 4-hour, 8 kWh EV charging plan in RG1 tonight.”
 
-In a second terminal, run `make ui` to open the chat and plan review at
-`http://localhost:8501`. The UI talks to the local API and lets a person approve
-or reject a pending plan.
+For a trace in the terminal, run `make demo`. To use the recorded example
+without network access, run `.venv/bin/python scripts/demo.py`; its forecast
+is dated fixture data, not a live recommendation.
 
-To launch with Docker, run `docker compose up --build`. The API binds to
-localhost by default. SQLite data is stored in a named container volume.
+To launch the API with Docker, run `docker compose up --build`. Add the
+optional Streamlit service with `docker compose --profile ui up --build`.
 
-Use `.venv/bin/python scripts/demo.py` for an offline example against the
-recorded RG1 fixture. It prints a dated calculation and is not live advice.
-Refresh API responses intentionally with `make fixtures`; inspect the URL,
-timestamp and HTTP result in `evals/fixtures/manifest.json` before committing.
+## Providers and costs
 
-## LLM use and cost
+The default `PROVIDER=demo` is a narrow rules-based assistant. It records zero
+model tokens and needs no LLM account. It is not a language model and does not
+handle general conversation.
 
-The default `PROVIDER=demo` uses rules to handle a narrow set of questions.
-It reports `demo-rules-v1` in health and answers, and records zero model tokens;
-it is not a language model. The optional Anthropic Messages API adapter uses
-Claude Haiku 4.5, with tool blocks, input/output token counts and a cost estimate.
-Paid calls require both `PROVIDER=anthropic` and `ALLOW_PAID_API=true`, plus an
-`ANTHROPIC_API_KEY`. No API calls are made in tests or the fixture evaluation.
+Claude is optional. To enable it, set `PROVIDER=anthropic`,
+`ALLOW_PAID_API=true`, and `ANTHROPIC_API_KEY`; `MODEL` can override the model
+name. Requests then use Anthropic's paid API, which is billed separately from
+a ChatGPT subscription. See [Anthropic's current API pricing](https://platform.claude.com/docs/en/about-claude/pricing).
+The local cost estimate is configured in `src/cwa/llm/pricing.py`. Never put
+API keys in source control.
 
-A ChatGPT subscription does not pay for this application's API requests;
-[OpenAI documents separate API access](https://learn.chatgpt.com/docs/enterprise/service-accounts).
-Anthropic lists Haiku 4.5 at $1 per million input tokens and $5 per million
-output tokens in its [official pricing](https://platform.claude.com/docs/en/about-claude/pricing).
-Rates can change. The local cost table is editable in `src/cwa/llm/pricing.py`.
+## Capabilities and limitations
 
-## Evaluation
+Include a Great Britain postcode or outcode such as `RG1` for local results.
+For a schedule, provide the device duration and the time range you can run it.
+For an emissions estimate, provide energy use in kWh.
 
-Run `make eval` to replay 40 fixture-derived scenarios through the actual agent
-loop, typed tools and guardrails. The report is explicit that this is an
-oracle-scripted infrastructure regression: scripts already know the expected
-answers, so results do not measure model reasoning, prompt quality or model
-accuracy. It also exercises malformed data, tool errors, numeric provenance,
-and attempts to call an unavailable approval tool. It does not prove a model
-will semantically resist prompt injection.
+The application does **not** find public charge points, check charger
+availability, give directions, compare electricity tariffs, or control
+devices. It does not support town-name lookup or locations outside Great
+Britain. Carbon forecasts can change, cover at most the available 48-hour
+horizon, and may fall back to national data. Scheduling assumes one
+uninterrupted run at constant power; estimated savings compare the recommended
+window with the earliest start in the requested range. Weather data does not
+predict a building's heat demand. Saved plans remain pending until a person
+approves them.
 
-Latest offline run: **40/40 replay checks passed**. The report shows actual
-category counts, precision/recall, latency and failure analysis in
-[`reports/replay_2026-09-29.md`](reports/replay_2026-09-29.md). Model baseline,
-real prompt comparison and stronger-model runs remain unmeasured; no paid calls
-were made.
+The free rules demo recognizes a narrow set of question patterns. Ask directly
+and use the examples above; ambiguous or unrelated questions may need
+rephrasing. The optional Claude provider is more flexible in conversation,
+but it remains constrained by the same data sources and tools.
 
-The current local suite has **87 passing tests** and 87.1% source coverage;
-Ruff and mypy pass. A live, free demo request against the public APIs returned
-a grounded four-hour recommendation with zero model tokens.
+## Tests and evaluation
 
-## Understand the code
+Run the project checks with `make check`, and the offline fixture replay with
+`make eval`. The replay currently passes **40/40 infrastructure checks**. It
+uses scripted responses with fixture-derived expected values; it does not
+measure model reasoning, prompt quality, answer accuracy, or semantic
+resistance to prompt injection. No paid model evaluation has been run.
 
-Start with `src/cwa/tools/scheduling.py`, then `tests/test_scheduling.py`. That
-pure calculation handles partial half-hour slots, ties, missing coverage and
-daylight-saving changes in UTC. Next read `src/cwa/agent/loop.py` for typed
-tool calls, trace records and guardrails, and `src/cwa/runtime.py` for how the
-API composes clients with the tool allow-list. `DECISIONS.md` explains the key
-trade-offs. `SPEC.md` and `PROMPT.md` are the supplied project references.
+CI runs Ruff, mypy, the test suite and offline replay on Python 3.11 and 3.12.
+The test suite currently contains **88 tests**. Public API fixtures can be
+refreshed with `make fixtures`; check their timestamps and URLs in
+`evals/fixtures/manifest.json` before committing them.
 
-## Limitations
+## Project guide
 
-The free rules demo covers a narrow set of question patterns; it is not a
-general-purpose language model. Useful prompts include “What is the current
-carbon intensity in RG1?”, “When is the cleanest 4-hour window to charge my EV
-in RG1 tonight?” and “Estimate emissions for a 2 kWh load in RG1 right now.”
-Provide a GB postcode or outcode, the run duration and the time window when
-asking for a schedule.
+- `src/cwa/agent/loop.py` — bounded tool loop, validation and trace records.
+- `src/cwa/runtime.py` — tool composition and provider selection.
+- `src/cwa/tools/scheduling.py` — pure window and emissions calculations.
+- `src/cwa/api/main.py` — API endpoints and error handling.
+- `ui/streamlit_app.py` — chat, trace viewer and plan review.
+- `evals/` — fixture replay cases, grader and reports.
+- `DECISIONS.md` — implementation choices and trade-offs.
 
-It cannot find public charge points, check availability, give directions,
-compare electricity tariffs or control devices. Town names and locations
-outside Great Britain are not supported. Live forecasts are uncertain and
-limited to the available horizon (up to 48 hours); regional data may fall back
-to a labelled national forecast. Scheduling assumes constant power for one
-uninterrupted run, and compares savings with the earliest requested start.
-Weather does not predict a building's heat demand. A saved plan stays pending
-until a human approves it; there is no device control.
+## Run the replayed examples
 
-The offline replay evaluation passes 40/40 infrastructure checks, but it uses
-scripted responses and does not measure language-model reasoning or answer
-quality. No paid model evaluation has been run.
-
-## Optional visual interface
-
-Run the API with `make run`, then open a second terminal and run `make ui`.
-The local interface is at `http://localhost:8501`; it includes a chat, trace
-viewer and buttons for explicit human plan approval. To run both containers,
-use `docker compose --profile ui up --build`.
+The checked-in replay report is [`reports/replay_2026-09-29.md`](reports/replay_2026-09-29.md).
+The deterministic fixture demo can be run with `make eval`; live model
+comparisons are intentionally not configured, so the evaluation requires no
+paid API calls.
