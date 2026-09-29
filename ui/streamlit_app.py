@@ -12,9 +12,9 @@ import streamlit as st
 DEFAULT_API = os.getenv("CWA_API_URL", "http://127.0.0.1:8000").rstrip("/")
 TIMEOUT = httpx.Timeout(5.0, connect=2.0)
 SUGGESTIONS = (
-    "When should I charge my EV in RG1 tonight for 4 hours?",
-    "Find a low-carbon window to run my washing machine tomorrow",
-    "What is the carbon intensity in Reading right now?",
+    "When is the cleanest 4-hour window to charge my EV in RG1 tonight?",
+    "What is the current carbon intensity in RG1?",
+    "Estimate emissions for a 2 kWh load in RG1 right now.",
 )
 
 st.set_page_config(
@@ -64,12 +64,13 @@ with st.sidebar:
         format_func=lambda page: {
             "Assistant": "Assistant",
             "Plans": "Plan review",
-            "About": "How it works",
+            "About": "Capabilities & limits",
         }[page],
     )
     st.space("large")
     st.subheader("Connection")
     api_base = st.text_input("API address", value=DEFAULT_API).strip().rstrip("/")
+    health = None
     try:
         health = api_get(api_base, "/health")
         st.success(
@@ -79,7 +80,10 @@ with st.sidebar:
     except (httpx.HTTPError, RuntimeError, ValueError, KeyError) as exc:
         st.error(f"API unavailable: {exc}", icon=":material/cloud_off:")
         st.caption("Start the API in another terminal with `make run`.")
-    st.caption("The local demo uses no model tokens.")
+    if health and health.get("provider") == "demo":
+        st.caption("Free rules demo · no model tokens")
+    else:
+        st.caption("Model API usage may be billed by your provider.")
     st.caption(f"Session `{st.session_state.cwa_session_id[:12]}`")
 
 
@@ -158,14 +162,14 @@ if st.session_state.cwa_page == "Assistant":
         with st.container(border=True):
             st.subheader("Find a cleaner time to use energy", anchor=False)
             st.write(
-                "Ask about EV charging, household devices, grid intensity or a flexible "
-                "schedule. Your plan stays under your control."
+                "Ask about regional grid carbon or when to run a flexible load. Include "
+                "a GB postcode, run time and time window for the clearest recommendation."
             )
-            st.caption("Try a question")
+            st.caption("Choose a working example")
             with st.container(horizontal=True):
                 for index, prompt in enumerate(SUGGESTIONS):
                     if st.button(
-                        ("EV charging", "Laundry", "Grid intensity")[index],
+                        ("EV charging window", "Current grid carbon", "Estimate emissions")[index],
                         key=f"suggestion-{index}",
                         icon=(
                             ":material/ev_station:",
@@ -254,23 +258,61 @@ elif st.session_state.cwa_page == "Plans":
         st.error(f"Could not load plans: {exc}")
 
 else:
-    st.title("How it works", anchor=False)
-    st.markdown("### Evidence first. Your decision always.")
+    st.title("Capabilities & limits", anchor=False)
+    st.markdown("### What it can answer")
     st.write(
-        "The assistant combines public carbon, postcode and weather data with tested "
-        "scheduling arithmetic. Each answer shows the data and tool calls behind it, "
-        "so you can inspect how a recommendation was made."
+        "The assistant is for Great Britain electricity-carbon questions. Include a "
+        "postcode or outcode (such as RG1) when asking for local information."
     )
-    with st.container(border=True):
-        st.subheader("Your energy plan stays in your hands", anchor=False)
-        st.write(
-            "Recommendations can be saved for review. Devices are never controlled "
-            "automatically, and a saved plan remains pending until you approve it."
+    supported = st.columns(2)
+    with supported[0].container(border=True):
+        st.subheader("Ask about", anchor=False)
+        st.markdown(
+            "- Current regional carbon intensity for a postcode\n"
+            "- Lowest-carbon window for a flexible load\n"
+            "- Estimated CO₂ for a load when you provide kWh\n"
+            "- Save a proposed plan for human review"
         )
-    with st.container(border=True):
-        st.subheader("Private by default, free to try", anchor=False)
-        st.write(
-            "The default local demo uses a rules-based provider and no model tokens. "
-            "An optional Anthropic provider can be configured for the API and may incur charges."
+    with supported[1].container(border=True):
+        st.subheader("Not supported", anchor=False)
+        st.markdown(
+            "- Finding charge points, availability or directions\n"
+            "- Electricity tariffs, bills or money savings\n"
+            "- Controlling chargers or other devices\n"
+            "- Locations outside Great Britain or town-name lookup"
         )
-        st.caption("The app connects to the API address shown in the sidebar.")
+    st.markdown("### Important limitations")
+    st.markdown(
+        "- **The free demo is deliberately narrow.** It uses matching rules, not a "
+        "language model, so it may misunderstand wording. Ask short, direct questions "
+        "and use the examples on the Assistant page.\n"
+        "- **Forecasts are estimates.** Carbon forecasts can change and are limited to "
+        "the available forecast horizon (up to 48 hours). Regional data can fall back "
+        "to a national forecast, which is labelled in the answer.\n"
+        "- **Scheduling assumes a steady load.** It treats the device as using constant "
+        "power for one uninterrupted run; it does not know your battery, charger, tariff "
+        "or actual device behaviour. Savings are compared with the earliest start in "
+        "the requested window.\n"
+        "- **Weather is context, not a heat-demand model.** A weather forecast does not "
+        "predict your building's heat loss or guarantee comfort.\n"
+        "- **Plans are suggestions only.** Saving a plan does not control a device; it "
+        "remains pending until a person approves it."
+    )
+    st.markdown("### Example questions")
+    for prompt in SUGGESTIONS:
+        st.markdown(f"- {prompt}")
+    with st.container(border=True):
+        st.subheader("Provider and cost", anchor=False)
+        if health and health.get("provider") == "demo":
+            st.write(
+                "The current provider is the free rules demo. It uses no model tokens "
+                "and does not understand general conversation."
+            )
+        elif health:
+            st.write(
+                f"The API is using `{health.get('provider')}` / `{health.get('model')}`. "
+                "Model-provider API usage may be billed separately from a ChatGPT subscription."
+            )
+        else:
+            st.write("The API is offline. Start it to see the active provider.")
+        st.caption("Evidence and tool calls are available from each answer's run trace.")

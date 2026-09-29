@@ -102,6 +102,14 @@ class DemoLLM:
                 "I could not verify the required data. Please try again.",
                 caveats=["A tool failed, rejected the request or returned too much data."],
             )
+        if re.search(
+            r"\b(?:where|nearest|nearby)\b.{0,60}\b(?:charg(?:e|er|ers|ing)|charge points?)\b",
+            question,
+        ):
+            return _answer(
+                "I cannot find charging stations or check their availability. "
+                "I can help choose a lower-carbon time to charge at a location you already have."
+            )
         if not re.search(
             r"carbon|electric|grid|charg|ev\b|dishwash|heat|weather|wind|power|emission", question
         ):

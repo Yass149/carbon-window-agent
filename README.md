@@ -88,14 +88,25 @@ trade-offs. `SPEC.md` and `PROMPT.md` are the supplied project references.
 
 ## Limitations
 
-The free rules demo covers a narrow set of questions; it does not understand
-general conversation. Live forecasts are uncertain, and the scheduling model
-assumes constant power for one uninterrupted run. Its savings comparison is
-against the earliest requested start. Weather is informative and is not used to
-predict heat demand. A saved plan stays pending until a human approves it; there
-is no device control. Town-name geocoding, electricity prices and service for
-locations outside Great Britain are not supported. Model evaluation remains
-unrun because the project has no funded API budget.
+The free rules demo covers a narrow set of question patterns; it is not a
+general-purpose language model. Useful prompts include “What is the current
+carbon intensity in RG1?”, “When is the cleanest 4-hour window to charge my EV
+in RG1 tonight?” and “Estimate emissions for a 2 kWh load in RG1 right now.”
+Provide a GB postcode or outcode, the run duration and the time window when
+asking for a schedule.
+
+It cannot find public charge points, check availability, give directions,
+compare electricity tariffs or control devices. Town names and locations
+outside Great Britain are not supported. Live forecasts are uncertain and
+limited to the available horizon (up to 48 hours); regional data may fall back
+to a labelled national forecast. Scheduling assumes constant power for one
+uninterrupted run, and compares savings with the earliest requested start.
+Weather does not predict a building's heat demand. A saved plan stays pending
+until a human approves it; there is no device control.
+
+The offline replay evaluation passes 40/40 infrastructure checks, but it uses
+scripted responses and does not measure language-model reasoning or answer
+quality. No paid model evaluation has been run.
 
 ## Optional visual interface
 
