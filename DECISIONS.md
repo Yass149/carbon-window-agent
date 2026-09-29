@@ -51,3 +51,10 @@ exercise validation, arithmetic, trace provenance and refusal boundaries, but
 cannot measure reasoning or prompt-injection resistance. The reports say this
 plainly. Live same-model baseline and stronger-model comparisons were skipped to
 honour the free-only request.
+
+## Local interface
+
+The optional Streamlit UI talks to the HTTP API instead of opening SQLite
+directly. This keeps the same validation and pending-plan state transitions as
+the CLI. It exposes approval only as a deliberate human button press. The UI
+is a separate process and container profile, so the API remains usable alone.

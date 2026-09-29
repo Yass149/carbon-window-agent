@@ -12,5 +12,17 @@ services:
       DB_PATH: /app/data/cwa.sqlite3
     volumes:
       - cwa-data:/app/data
+  ui:
+    build:
+      context: .
+      dockerfile: Dockerfile.ui
+    profiles: ["ui"]
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8501:8501"
+    environment:
+      CWA_API_URL: http://api:8000
 volumes:
   cwa-data:

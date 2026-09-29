@@ -30,6 +30,10 @@ free rules provider, with its full trace:
 make demo
 ```
 
+In a second terminal, run `make ui` to open the chat and plan review at
+`http://localhost:8501`. The UI talks to the local API and lets a person approve
+or reject a pending plan.
+
 To launch with Docker, run `docker compose up --build`. The API binds to
 localhost by default. SQLite data is stored in a named container volume.
 
@@ -92,3 +96,10 @@ predict heat demand. A saved plan stays pending until a human approves it; there
 is no device control. Town-name geocoding, electricity prices and service for
 locations outside Great Britain are not supported. Model evaluation remains
 unrun because the project has no funded API budget.
+
+## Optional visual interface
+
+Run the API with `make run`, then open a second terminal and run `make ui`.
+The local interface is at `http://localhost:8501`; it includes a chat, trace
+viewer and buttons for explicit human plan approval. To run both containers,
+use `docker compose --profile ui up --build`.
