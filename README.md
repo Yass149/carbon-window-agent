@@ -14,7 +14,8 @@ Electricity has a carbon intensity: an estimate of the CO₂ associated with
 each kilowatt-hour used. That estimate changes throughout the day as demand,
 weather and the generation mix change. If an EV charge or appliance cycle can
 wait, this project helps compare forecast hours for the same task and shows
-the assumptions behind the result.
+the assumptions behind the result. [NESO describes the factors behind the
+changing forecast](https://www.carbonintensity.org.uk/).
 
 You do not need to make carbon your top priority. Use the schedule only when
 it fits your routine or when you need a traceable estimate for awareness or
@@ -159,7 +160,7 @@ measure model reasoning, prompt quality, answer accuracy, or semantic
 resistance to prompt injection. No paid model evaluation has been run.
 
 CI runs Ruff, mypy, the test suite and offline replay on Python 3.11 and 3.12.
-The test suite currently contains **88 tests**. Public API fixtures can be
+The test suite currently contains **89 tests**. Public API fixtures can be
 refreshed with `make fixtures`; check their timestamps and URLs in
 `evals/fixtures/manifest.json` before committing them.
 
