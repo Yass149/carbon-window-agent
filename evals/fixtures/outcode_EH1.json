@@ -1,0 +1,29 @@
+{
+  "status": 200,
+  "result": {
+    "outcode": "EH1",
+    "longitude": -3.1927898699690385,
+    "latitude": 55.950791006191984,
+    "northings": 673727,
+    "eastings": 325612,
+    "admin_district": [
+      "City of Edinburgh"
+    ],
+    "parish": [],
+    "admin_county": [],
+    "admin_ward": [
+      "City Centre",
+      "Corstorphine/Murrayfield",
+      "Leith"
+    ],
+    "country": [
+      "Scotland"
+    ],
+    "parliamentary_constituency": [
+      "Edinburgh East and Musselburgh",
+      "Edinburgh North and Leith",
+      "Edinburgh South West",
+      "Edinburgh West"
+    ]
+  }
+}

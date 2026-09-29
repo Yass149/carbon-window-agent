@@ -1,0 +1,91 @@
+{
+  "recorded_at": "2026-09-29T12:38:00.124112+00:00",
+  "forecast_start": "2026-09-29T12:30:00+00:00",
+  "source": "Live public APIs; failures retained as recorded",
+  "records": [
+    {
+      "name": "carbon_current_RG1",
+      "url": "https://api.carbonintensity.org.uk/regional/postcode/RG1",
+      "retrieved_at": "2026-09-29T12:38:00.148529+00:00",
+      "status_code": 200,
+      "file": "carbon_current_RG1.json"
+    },
+    {
+      "name": "carbon_forecast_RG1",
+      "url": "https://api.carbonintensity.org.uk/regional/intensity/2026-09-29T12:30Z/fw48h/postcode/RG1",
+      "retrieved_at": "2026-09-29T12:38:00.649109+00:00",
+      "status_code": 200,
+      "file": "carbon_forecast_RG1.json"
+    },
+    {
+      "name": "outcode_RG1",
+      "url": "https://api.postcodes.io/outcodes/RG1",
+      "retrieved_at": "2026-09-29T12:38:02.449616+00:00",
+      "status_code": 200,
+      "file": "outcode_RG1.json"
+    },
+    {
+      "name": "carbon_current_CB2",
+      "url": "https://api.carbonintensity.org.uk/regional/postcode/CB2",
+      "retrieved_at": "2026-09-29T12:38:02.776259+00:00",
+      "status_code": 200,
+      "file": "carbon_current_CB2.json"
+    },
+    {
+      "name": "carbon_forecast_CB2",
+      "url": "https://api.carbonintensity.org.uk/regional/intensity/2026-09-29T12:30Z/fw48h/postcode/CB2",
+      "retrieved_at": "2026-09-29T12:38:03.084585+00:00",
+      "status_code": 200,
+      "file": "carbon_forecast_CB2.json"
+    },
+    {
+      "name": "outcode_CB2",
+      "url": "https://api.postcodes.io/outcodes/CB2",
+      "retrieved_at": "2026-09-29T12:38:05.676188+00:00",
+      "status_code": 200,
+      "file": "outcode_CB2.json"
+    },
+    {
+      "name": "carbon_current_EH1",
+      "url": "https://api.carbonintensity.org.uk/regional/postcode/EH1",
+      "retrieved_at": "2026-09-29T12:38:05.819390+00:00",
+      "status_code": 200,
+      "file": "carbon_current_EH1.json"
+    },
+    {
+      "name": "carbon_forecast_EH1",
+      "url": "https://api.carbonintensity.org.uk/regional/intensity/2026-09-29T12:30Z/fw48h/postcode/EH1",
+      "retrieved_at": "2026-09-29T12:38:06.165760+00:00",
+      "status_code": 200,
+      "file": "carbon_forecast_EH1.json"
+    },
+    {
+      "name": "outcode_EH1",
+      "url": "https://api.postcodes.io/outcodes/EH1",
+      "retrieved_at": "2026-09-29T12:38:08.618918+00:00",
+      "status_code": 200,
+      "file": "outcode_EH1.json"
+    },
+    {
+      "name": "carbon_national",
+      "url": "https://api.carbonintensity.org.uk/intensity/2026-09-29T12:30Z/fw48h",
+      "retrieved_at": "2026-09-29T12:38:08.663236+00:00",
+      "status_code": 200,
+      "file": "carbon_national.json"
+    },
+    {
+      "name": "postcode_RG1_1AF",
+      "url": "https://api.postcodes.io/postcodes/RG1%201AF",
+      "retrieved_at": "2026-09-29T12:38:08.924126+00:00",
+      "status_code": 200,
+      "file": "postcode_RG1_1AF.json"
+    },
+    {
+      "name": "weather_RG1",
+      "url": "https://api.open-meteo.com/v1/forecast?latitude=51.456&longitude=-0.971&hourly=temperature_2m,wind_speed_10m,shortwave_radiation&timezone=UTC&wind_speed_unit=ms&forecast_days=3",
+      "retrieved_at": "2026-09-29T12:38:09.140334+00:00",
+      "status_code": 200,
+      "file": "weather_RG1.json"
+    }
+  ]
+}

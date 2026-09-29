@@ -1,0 +1,58 @@
+{
+  "data": [
+    {
+      "regionid": 2,
+      "dnoregion": "SP Distribution",
+      "shortname": "South Scotland",
+      "postcode": "EH1",
+      "data": [
+        {
+          "from": "2026-09-29T12:00Z",
+          "to": "2026-09-29T12:30Z",
+          "intensity": {
+            "forecast": 0,
+            "index": "very low"
+          },
+          "generationmix": [
+            {
+              "perc": 0,
+              "fuel": "biomass"
+            },
+            {
+              "perc": 0,
+              "fuel": "coal"
+            },
+            {
+              "fuel": "imports",
+              "perc": 0
+            },
+            {
+              "fuel": "gas",
+              "perc": 0
+            },
+            {
+              "perc": 14.5,
+              "fuel": "nuclear"
+            },
+            {
+              "fuel": "other",
+              "perc": 0
+            },
+            {
+              "fuel": "hydro",
+              "perc": 0
+            },
+            {
+              "fuel": "solar",
+              "perc": 3.3
+            },
+            {
+              "perc": 82.2,
+              "fuel": "wind"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

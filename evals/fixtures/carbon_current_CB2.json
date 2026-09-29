@@ -1,0 +1,58 @@
+{
+  "data": [
+    {
+      "regionid": 10,
+      "dnoregion": "UKPN East",
+      "shortname": "East England",
+      "postcode": "CB2",
+      "data": [
+        {
+          "from": "2026-09-29T12:00Z",
+          "to": "2026-09-29T12:30Z",
+          "intensity": {
+            "forecast": 122,
+            "index": "moderate"
+          },
+          "generationmix": [
+            {
+              "perc": 3.6,
+              "fuel": "biomass"
+            },
+            {
+              "fuel": "coal",
+              "perc": 0
+            },
+            {
+              "perc": 12.6,
+              "fuel": "imports"
+            },
+            {
+              "fuel": "gas",
+              "perc": 16.1
+            },
+            {
+              "perc": 23.4,
+              "fuel": "nuclear"
+            },
+            {
+              "perc": 0,
+              "fuel": "other"
+            },
+            {
+              "fuel": "hydro",
+              "perc": 0
+            },
+            {
+              "perc": 31.8,
+              "fuel": "solar"
+            },
+            {
+              "fuel": "wind",
+              "perc": 12.4
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

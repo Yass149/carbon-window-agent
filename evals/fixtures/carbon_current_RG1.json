@@ -1,0 +1,58 @@
+{
+  "data": [
+    {
+      "regionid": 12,
+      "dnoregion": "SSE South",
+      "shortname": "South England",
+      "postcode": "RG1",
+      "data": [
+        {
+          "from": "2026-09-29T12:00Z",
+          "to": "2026-09-29T12:30Z",
+          "intensity": {
+            "forecast": 70,
+            "index": "low"
+          },
+          "generationmix": [
+            {
+              "fuel": "biomass",
+              "perc": 4.5
+            },
+            {
+              "fuel": "coal",
+              "perc": 0
+            },
+            {
+              "fuel": "imports",
+              "perc": 25.2
+            },
+            {
+              "fuel": "gas",
+              "perc": 12.7
+            },
+            {
+              "perc": 2.5,
+              "fuel": "nuclear"
+            },
+            {
+              "perc": 0,
+              "fuel": "other"
+            },
+            {
+              "perc": 0,
+              "fuel": "hydro"
+            },
+            {
+              "perc": 40,
+              "fuel": "solar"
+            },
+            {
+              "perc": 15.1,
+              "fuel": "wind"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

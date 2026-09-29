@@ -1,0 +1,37 @@
+{
+  "status": 200,
+  "result": {
+    "outcode": "RG1",
+    "longitude": -0.9697934362041454,
+    "latitude": 51.45176211164262,
+    "northings": 173034,
+    "eastings": 471681,
+    "admin_district": [
+      "Reading",
+      "Wokingham"
+    ],
+    "parish": [
+      "Earley",
+      "Reading, unparished area"
+    ],
+    "admin_county": [],
+    "admin_ward": [
+      "Abbey",
+      "Battle",
+      "Coley",
+      "Katesgrove",
+      "Maiden Erlegh & Whitegates",
+      "Park",
+      "Redlands",
+      "Thames",
+      "Whitley"
+    ],
+    "country": [
+      "England"
+    ],
+    "parliamentary_constituency": [
+      "Earley and Woodley",
+      "Reading Central"
+    ]
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "status": 200,
+  "result": {
+    "outcode": "CB2",
+    "longitude": 0.12306689455782309,
+    "latitude": 52.18527565986395,
+    "northings": 256237,
+    "eastings": 545238,
+    "admin_district": [
+      "Cambridge",
+      "South Cambridgeshire"
+    ],
+    "parish": [
+      "Cambridge, unparished area",
+      "South Trumpington"
+    ],
+    "admin_county": [
+      "Cambridgeshire"
+    ],
+    "admin_ward": [
+      "Coleridge",
+      "Harston & Comberton",
+      "Market",
+      "Newnham",
+      "Petersfield",
+      "Queen Edith's",
+      "Trumpington"
+    ],
+    "country": [
+      "England"
+    ],
+    "parliamentary_constituency": [
+      "Cambridge",
+      "South Cambridgeshire"
+    ]
+  }
+}
