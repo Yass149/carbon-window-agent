@@ -1,53 +1,94 @@
 # Carbon Window Agent
 
-A portfolio project that helps people in Great Britain choose lower-carbon
-times to use electricity. **Phase 1 is implemented first:** public API clients,
-recorded responses and deterministic scheduling maths. The conversational agent,
-web API, saved plans and model evaluations are later phases, not current features.
+Carbon Window Agent uses forecast electricity intensity, postcode lookup and
+weather data to find lower carbon times to run flexible electricity loads in
+Great Britain. The live API defaults to a deterministic rules demo, so it runs
+without an LLM account, API key or model charge.
 
-## Run locally
+## Run it
 
 Requires Python 3.11 or newer.
 
 ```sh
 make install
 make check
-.venv/bin/python scripts/demo.py
+make run
 ```
 
-If Python has a different executable name, use `make install PYTHON=python3`.
-Tests run offline without API keys. To deliberately refresh the real public
-API responses, run `make fixtures`. This replaces time-sensitive fixtures;
-review their manifest and diff before committing.
+Then send a question to `http://127.0.0.1:8000/ask`:
 
-Verified locally on Python 3.11: **36 tests pass, 97.73% source coverage**, with
-Ruff and mypy clean. All 12 recorded public API requests returned HTTP 200.
-These are software checks, not model evaluation results. GitHub Actions is
-planned with the API/storage phase and has not run yet.
+```sh
+curl -s http://127.0.0.1:8000/ask \
+  -H 'Content-Type: application/json' \
+  -d '{"question":"When should I charge my EV in RG1 tonight for 4 hours?"}'
+```
 
-## Cost and model choice
+Run an end-to-end terminal example against the public data APIs, using only the
+free rules provider, with its full trace:
 
-Phase 1 makes no model calls and uses no API keys. Development here does not
-enable a paid model provider. A ChatGPT subscription does not supply API billing
-for this application: [OpenAI documents separate API access and billing](https://learn.chatgpt.com/docs/enterprise/service-accounts).
-The reference specification proposes Claude; provider selection is deferred
-until Phase 2. Scripted model responses will support free, offline development,
-but they cannot establish real model quality or replace genuine evaluations.
+```sh
+make demo
+```
 
-## Read the code
+To launch with Docker, run `docker compose up --build`. The API binds to
+localhost by default. SQLite data is stored in a named container volume.
 
-Start with `src/cwa/tools/scheduling.py` and `tests/test_scheduling.py`.
-The calculation is independent of HTTP and models, so you can explain and test
-its behaviour directly. Then read `src/cwa/clients/` for API validation,
-timeouts, retries and caching. `DECISIONS.md` records implementation trade-offs.
-`SPEC.md` and `PROMPT.md` preserve the supplied project references.
+Use `.venv/bin/python scripts/demo.py` for an offline example against the
+recorded RG1 fixture. It prints a dated calculation and is not live advice.
+Refresh API responses intentionally with `make fixtures`; inspect the URL,
+timestamp and HTTP result in `evals/fixtures/manifest.json` before committing.
+
+## LLM use and cost
+
+The default `PROVIDER=demo` uses rules to handle a narrow set of questions.
+It reports `demo-rules-v1` in health and answers, and records zero model tokens;
+it is not a language model. The optional Anthropic Messages API adapter uses
+Claude Haiku 4.5, with tool blocks, input/output token counts and a cost estimate.
+Paid calls require both `PROVIDER=anthropic` and `ALLOW_PAID_API=true`, plus an
+`ANTHROPIC_API_KEY`. No API calls are made in tests or the fixture evaluation.
+
+A ChatGPT subscription does not pay for this application's API requests;
+[OpenAI documents separate API access](https://learn.chatgpt.com/docs/enterprise/service-accounts).
+Anthropic lists Haiku 4.5 at $1 per million input tokens and $5 per million
+output tokens in its [official pricing](https://platform.claude.com/docs/en/about-claude/pricing).
+Rates can change. The local cost table is editable in `src/cwa/llm/pricing.py`.
+
+## Evaluation
+
+Run `make eval` to replay 40 fixture-derived scenarios through the actual agent
+loop, typed tools and guardrails. The report is explicit that this is an
+oracle-scripted infrastructure regression: scripts already know the expected
+answers, so results do not measure model reasoning, prompt quality or model
+accuracy. It also exercises malformed data, tool errors, numeric provenance,
+and attempts to call an unavailable approval tool. It does not prove a model
+will semantically resist prompt injection.
+
+Latest offline run: **40/40 replay checks passed**. The report shows actual
+category counts, precision/recall, latency and failure analysis in
+[`reports/replay_2026-09-29.md`](reports/replay_2026-09-29.md). Model baseline,
+real prompt comparison and stronger-model runs remain unmeasured; no paid calls
+were made.
+
+The current local suite has **87 passing tests** and 87.1% source coverage;
+Ruff and mypy pass. A live, free demo request against the public APIs returned
+a grounded four-hour recommendation with zero model tokens.
+
+## Understand the code
+
+Start with `src/cwa/tools/scheduling.py`, then `tests/test_scheduling.py`. That
+pure calculation handles partial half-hour slots, ties, missing coverage and
+daylight-saving changes in UTC. Next read `src/cwa/agent/loop.py` for typed
+tool calls, trace records and guardrails, and `src/cwa/runtime.py` for how the
+API composes clients with the tool allow-list. `DECISIONS.md` explains the key
+trade-offs. `SPEC.md` and `PROMPT.md` are the supplied project references.
 
 ## Limitations
 
-Forecasts are predictions, not measured emissions or guaranteed savings.
-Scheduling assumes constant power throughout a continuous run. All calculations
-use timezone-aware UTC instants; display times should use Europe/London.
-The comparison baseline is the requested earliest start, not necessarily now.
-Location lookup currently accepts postcodes and outcodes; town-name geocoding
-is not implemented. There is no electricity-price optimisation or device control. Model evaluation
-results will only be published after real, explicitly funded runs.
+The free rules demo covers a narrow set of questions; it does not understand
+general conversation. Live forecasts are uncertain, and the scheduling model
+assumes constant power for one uninterrupted run. Its savings comparison is
+against the earliest requested start. Weather is informative and is not used to
+predict heat demand. A saved plan stays pending until a human approves it; there
+is no device control. Town-name geocoding, electricity prices and service for
+locations outside Great Britain are not supported. Model evaluation remains
+unrun because the project has no funded API budget.
