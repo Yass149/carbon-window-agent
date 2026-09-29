@@ -1,0 +1,19 @@
+[theme]
+base = "light"
+primaryColor = "#16745B"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F3F7F5"
+textColor = "#18352C"
+font = "sans-serif"
+headingFont = "sans-serif"
+baseRadius = "large"
+borderColor = "#DCE7E1"
+greenColor = "#16745B"
+greenBackgroundColor = "#E7F4EE"
+greenTextColor = "#145A45"
+
+[theme.sidebar]
+backgroundColor = "#F3F7F5"
+secondaryBackgroundColor = "#FFFFFF"
+textColor = "#18352C"
+borderColor = "#DCE7E1"
