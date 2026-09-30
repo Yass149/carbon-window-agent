@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/readme-banner.svg" alt="Carbon forecast line chart graphic on a dark green background" width="100%" />
+  <img src="assets/readme-banner.svg" alt="Schematic grid intensity timeline with an explicitly illustrative lower-carbon run window" width="100%" />
 </div>
 
 # Carbon Window Agent
