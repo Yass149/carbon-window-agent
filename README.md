@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="assets/readme-banner.svg" alt="Carbon forecast line chart graphic on a dark green background" width="100%" />
+</div>
+
 # Carbon Window Agent
 
 Find lower-carbon times to run flexible electrical loads in Great Britain. Ask
