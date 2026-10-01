@@ -120,7 +120,9 @@ class DemoLLM:
         if "resolve_location" not in results:
             return _tool("resolve_location", {"place": location.group(0)})
         resolved = results["resolve_location"]
-        duration = re.search(r"(\d+(?:\.\d+)?)\s*(hours?|hrs?|h\b|minutes?|mins?)", question)
+        duration = re.search(
+            r"(\d+(?:\.\d+)?)\s*-?\s*(hours?|hrs?|h\b|minutes?|mins?)", question
+        )
         energy = re.search(r"(\d+(?:\.\d+)?)\s*kwh\b", question)
         schedule = bool(re.search(r"best|lowest|when|tonight|plan|schedul", question))
         if not schedule:

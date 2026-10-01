@@ -12,6 +12,14 @@ approval; the app never controls a device.
 The project runs locally with a free, deterministic rules demo. Claude is an
 optional provider and requires a separately billed Anthropic API key.
 
+> **Current status:** the API and Streamlit interface work locally; there is no
+> hosted public demo. The default mode needs an internet connection for live
+> public forecast data, but it does not use paid model APIs or require an API key.
+
+![Local demo: configure a four-hour EV charging run, then inspect the live forecast window and comparison](docs/assets/local-demo.gif)
+
+<sub>Recorded locally on 1 October 2026. Forecast figures are live data from that time and will change.</sub>
+
 ## Why use it?
 
 Electricity has a carbon intensity: an estimate of the CO₂ associated with
@@ -164,7 +172,7 @@ measure model reasoning, prompt quality, answer accuracy, or semantic
 resistance to prompt injection. No paid model evaluation has been run.
 
 CI runs Ruff, mypy, the test suite and offline replay on Python 3.11 and 3.12.
-The test suite currently contains **89 tests**. Public API fixtures can be
+The test suite currently contains **90 tests**. Public API fixtures can be
 refreshed with `make fixtures`; check their timestamps and URLs in
 `evals/fixtures/manifest.json` before committing them.
 
@@ -180,7 +188,7 @@ refreshed with `make fixtures`; check their timestamps and URLs in
 
 ## Run the replayed examples
 
-The checked-in replay report is [`reports/replay_2026-09-29.md`](reports/replay_2026-09-29.md).
+The checked-in replay report is [`reports/replay_2026-10-01.md`](reports/replay_2026-10-01.md).
 The deterministic fixture demo can be run with `make eval`; live model
 comparisons are intentionally not configured, so the evaluation requires no
 paid API calls.
